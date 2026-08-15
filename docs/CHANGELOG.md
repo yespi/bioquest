@@ -1,5 +1,17 @@
 # BioQuest — Changelog
 
+## 2026-08-15 — Academy: cascada IA saneada (Gemini fuera, OpenRouter arreglado)
+**Deploy:** `docker restart fauna_api` (BioQuest no tiene backend propio, lo sirve `fauna_api`)
+
+El backend de Academy (`routes_academy.py`, resumen narrado de especies + ficha rica de especie)
+tenía `OPENROUTER_TEXT_MODEL` apuntando a un modelo retirado del catálogo
+(`meta-llama/llama-3.3-70b-instruct:free`) → corregido a `nvidia/nemotron-3-super-120b-a12b:free`.
+**Gemini eliminado del todo** (función `_ai_call_gemini`, con reintentos que llegaban a
+desperdiciar 30s por llamada contra una cuota gratuita de Google ya agotada — 20 peticiones/día
+por proyecto/modelo, compartida con el resto de apps del host). Ahora la cascada va directa a
+OpenRouter → Groq.
+
+
 ## 2026-08-01 17:16 — BioQuest
 **Build PRE:** `bq71724b3a` · **Origen:** sync automático (Chewie)
 
