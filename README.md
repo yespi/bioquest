@@ -4,11 +4,11 @@
 [![Species](https://img.shields.io/badge/species-1,369-blue)]()
 [![EUMETSAT](https://img.shields.io/badge/satellite-EUMETSAT-green)]()
 
-**Live**: https://bioquest.yespi.es | **AI Engine**: https://github.com/yespi/yolofauna
+**Live**: https://bioquest.yespi.es | **AI Engine**: [BioFauna](https://github.com/yespi/biofauna)
 
 ## Overview
 
-BioQuest is an educational platform that gamifies learning Mediterranean marine species identification. Built on the YOLOFauna AI engine, it combines a structured species academy, interactive quizzes, satellite-based exploration maps (EUMETSAT), and achievement systems.
+BioQuest is an educational platform that gamifies learning Mediterranean marine species identification. Built on the **BioFauna** AI engine (BioCLIP-2.5 ViT-H), it combines a structured species academy, interactive quizzes, satellite-based exploration maps (EUMETSAT), and achievement systems.
 
 ## Features
 
