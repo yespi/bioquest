@@ -1,5 +1,22 @@
 # BioQuest — Changelog
 
+## 2026-08-20 — Explore/Buceo: iconos de predicción meteo WMO + arreglos satélite
+**Build PRO:** `bq5b4dfbc3` · **Git:** `2046c5e37` + `d6c7cce95` + `b34a7b3ac` + `c95a3289d` (`hansolo-dockers`) · **Deploy:** `deploy-to-pro.sh` + `docker restart fauna_api`
+
+- **Iconos de predicción meteorológica (WMO) sobre el mapa Buceo**, visibles en todas las capas, con **LOD por zoom**:
+  - **España (z<7):** 52 iconos — uno por provincia (centroide del geojson `spain-provinces.geojson`), tamaño compacto (22px), sin nombre.
+  - **Región (z7-9):** + ciudades grandes, tamaño 34px, con nombre.
+  - **Detalle (z≥9):** + poblaciones menores, 44px, con nombre.
+- **Backend:** nuevo endpoint `GET /buceo/forecast-batch?coords=lat,lng|lat,lng` en `routes_buceo.py` (lo sirve `fauna_api` :3005): una sola llamada Open-Meteo multi-coord (máx 100 coords, caché 30 min, cooldown 429) → `weather_code` (WMO) diario a 7 días por punto.
+- **Eficiencia:** el frontend parte en lotes ≤90 coords y fusiona → todos los puntos reciben datos (antes se cortaban a 60).
+- **Declutter por distancia en píxeles (≥100px):** las 52 provincias siempre visibles; las ciudades se espacian priorizando las más pobladas → representación equitativa del territorio (zonas densas dejan de apiñarse, zonas rurales conservan su provincia).
+- **Dedupe por nombre:** máximo 1 icono por sitio (6 ciudades coincidían con provincia homónima: Barcelona, Girona, Huesca, Lleida, Tarragona, Zaragoza → ahora gana la ciudad con tier `prov`).
+- **Refresco al cambiar de día:** `setDay()` en `selectForecastDay`/`selectForecastTR` → los emojis cambian al seleccionar otro día en la barra `bq-buceo__fc-days`.
+- **Arreglo satélite blanco:** `makeWmsLayer`/`makeDwdLayer` pasan a `format: 'image/png'` (JPEG no soporta alfa → fondo blanco puro) + sonda `isEumetsatFrameEmpty` (GetMap 64×64, <500B = vacío) que conmuta a `rgb_geocolour` (IR nocturno) + re-evaluación día/noche cada 20 min.
+- **Capa:** nuevo composable `composables/bq-fc-icons.js` (`createBqFcIcons`); CSS `.bq-fc-icon*` en `index.html`.
+- **Verificado con Playwright (PRO):** z5=52 provincias, z8=56 iconos ≥105px, z10=84 ≥102px, 0 duplicados, cambio de día OK.
+
+
 ## 2026-08-15 — Academy: cascada IA saneada (Gemini fuera, OpenRouter arreglado)
 **Deploy:** `docker restart fauna_api` (BioQuest no tiene backend propio, lo sirve `fauna_api`)
 

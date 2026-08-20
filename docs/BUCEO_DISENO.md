@@ -58,6 +58,19 @@ El cluster Minka da la **ubicación real de buceo**; una BBDD oficial da el **no
 - **Informe SEO** en menú usuario solo para admin (`contact@yespi.es`).
 - **🎲 Dado** (diseño original): sugerir cala al azar — ver fases; no bloquea las capas.
 
+### 6.1 Iconos de predicción meteo por provincia/población (2026-08-20)
+
+- **Capa `bq-fc-icons.js`** (composable `createBqFcIcons`) sobre el mapa Buceo, visible en todas las capas (temp/meteo/sat).
+- **LOD por zoom** + **tamaño adaptativo**:
+  - España (z<7): 52 iconos, uno por provincia (centroide), 22px, sin nombre.
+  - Región (z7-9): + ciudades grandes, 34px, con nombre.
+  - Detalle (z≥9): + poblaciones menores, 44px, con nombre.
+- **Dedupe por nombre** (máx 1 por sitio): si una ciudad coincide con provincia homónima, gana la ciudad conservando `tier: 'prov'`.
+- **Declutter por distancia en píxeles (MIN_PX=100):** las 52 provincias siempre visibles; las ciudades se espacian contra provincias y entre sí, priorizando las más pobladas → cobertura equitativa del territorio.
+- **Datos:** endpoint backend `GET /buceo/forecast-batch` (Open-Meteo multi-coord, ≤100 coords/llamada, caché 30 min) → `weather_code` WMO diario a 7 días. El frontend parte en lotes ≤90 y fusiona.
+- **Refresco:** los iconos reflejan `fcSelectedDate` (cambian al seleccionar día en `bq-buceo__fc-days`).
+- **Emoji WMO:** ☀️🌤️⛅☁️🌫️🌦️🌧️❄️⛈️ (`wmoToEmoji` local en el composable).
+
 ## 7. Semáforo meteo (DIVE-05)
 
 - **Open-Meteo Marine** (gratis, sin clave: altura de ola, periodo, viento). El buceador **no ve datos meteo**, ve un **semáforo 🟢🟡🔴** calculado por orientación/exposición de la cala. Excursiones usa Open-Meteo estándar (lluvia/viento/temp).

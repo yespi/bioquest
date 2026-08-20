@@ -6,13 +6,13 @@
 
 ## Abstract
 
-BioQuest is an educational platform that gamifies learning Mediterranean marine species identification. Built on the YOLOFauna AI engine, it combines a structured academy of 1,369 species, adaptive quizzes with AI-generated distractors, real EUMETSAT satellite imagery for environmental context, and an achievement system inspired by game design principles. The platform targets diving schools, marine biology students, and citizen scientists, creating a pipeline from learning (BioQuest) to contributing (FotoFauna) to improving the AI (YOLOFauna). This paper describes the platform's design, pedagogical foundations, technical implementation, and the integration of AI-powered features for educational purposes.
+BioQuest is an educational platform that gamifies learning Mediterranean marine species identification. Built on the BioFauna AI engine, it combines a structured academy of 1,369 species, adaptive quizzes with AI-generated distractors, real EUMETSAT satellite imagery for environmental context, and an achievement system inspired by game design principles. The platform targets diving schools, marine biology students, and citizen scientists, creating a pipeline from learning (BioQuest) to contributing (FotoFauna) to improving the AI (BioFauna). This paper describes the platform's design, pedagogical foundations, technical implementation, and the integration of AI-powered features for educational purposes.
 
 ## 1. Introduction
 
 Learning to identify marine species is a complex cognitive task requiring memorization of hundreds of scientific names, recognition of subtle morphological differences, and understanding of ecological context. Traditionally taught through field guides and in-person mentorship, this skill is increasingly scarce as professional taxonomists decline in number (Hopkins & Freckleton, 2002).
 
-Digital learning platforms offer advantages over traditional methods: adaptive difficulty, immediate feedback, multimedia integration, and progress tracking. BioQuest leverages these capabilities alongside the same AI engine used for species identification (YOLOFauna) to create an immersive, gamified learning environment.
+Digital learning platforms offer advantages over traditional methods: adaptive difficulty, immediate feedback, multimedia integration, and progress tracking. BioQuest leverages these capabilities alongside the same AI engine used for species identification (BioFauna) to create an immersive, gamified learning environment.
 
 ## 2. Platform Architecture
 
@@ -20,7 +20,7 @@ Digital learning platforms offer advantages over traditional methods: adaptive d
 
 BioQuest shares its core infrastructure with FotoFauna:
 - Same PostgreSQL database
-- Same YOLOFauna AI engine for identification
+- Same BioFauna AI engine for identification
 - Same species catalog (1,369 species, WoRMS-validated)
 - Same photo repository (525,253 images)
 - Same authentication system (Google OAuth)
@@ -89,7 +89,7 @@ Each card displays:
 
 ### 4.2 AI-Generated Distractors
 
-The YOLOFauna AI engine generates quiz distractors by:
+The BioFauna AI engine generates quiz distractors by:
 1. Locating the correct species in BioCLIP embedding space
 2. Finding the 3-4 most visually similar species (cosine similarity)
 3. Using these as multiple-choice options
@@ -234,6 +234,22 @@ Real satellite imagery from Meteosat Third Generation (MTG-I1):
 - Best time to dive recommendations
 - Integration with local dive site databases
 
+### 8.3 Weather Forecast Icons on the Map (2026-08-20)
+
+The Buceo/Explore map overlays **daily weather prediction icons (WMO codes)** across the entire Mediterranean region, visible on every map layer (temp/meteo/satellite):
+
+- **Level-of-detail by zoom** with adaptive icon sizing:
+  - **Spain (z<7):** 52 icons — one per province (centroid), compact 22px, no label.
+  - **Region (z7-9):** + major cities, 34px, with name.
+  - **Detail (z≥9):** + smaller towns, 44px, with name.
+- **Deduplication by name** (max 1 icon per place): when a city shares its name with a province (Barcelona, Girona, Huesca, Lleida, Tarragona, Zaragoza), the city wins while keeping full visibility.
+- **Decluttering by pixel distance (MIN_PX=100):** the 52 provinces are always visible; cities are spaced against provinces and each other, prioritizing the most populated → equitable territorial coverage (dense metropolitan areas stop clustering, rural areas keep at least their province icon).
+- **Data:** a single `GET /buceo/forecast-batch` backend call (Open-Meteo multi-coordinate, ≤100 coords/request, 30-min cache, 429 cooldown) returns daily `weather_code` (WMO) for 7 days per point; the frontend splits into ≤90-coordinate batches and merges.
+- **Refresh:** icons follow the selected day in the sidebar (`fcSelectedDate`), updating live as the user changes date.
+- **Emoji mapping:** ☀️🌤️⛅☁️🌫️🌦️🌧️❄️⛈️.
+
+This feature turns the exploration map into a practical dive-planning tool: users can see at a glance the expected weather for the coming week across any region of the Mediterranean, combining educational exploration with real utility for dive site selection.
+
 ## 9. Achievement System
 
 ### 9.1 Badge Design
@@ -286,7 +302,7 @@ BioQuest's design draws on established learning principles:
 
 ### 11.2 AI-Enhanced Pedagogy
 
-The YOLOFauna AI engine provides unique educational capabilities:
+The BioFauna AI engine provides unique educational capabilities:
 - **Automated distractor generation**: Creates appropriately challenging quiz options
 - **Real-time feedback**: Verifies user identifications against AI predictions
 - **Visual similarity metrics**: Quantifies how confusable two species are
@@ -364,7 +380,7 @@ BioQuest reimagines marine species learning for the digital age. By combining AI
 
 ## References
 
-1. Zafra, G. (2026). YOLOFauna: Fine-tuning BioCLIP for Mediterranean Marine Species Identification. In preparation.
+1. Zafra, G. (2026). BioFauna: Fine-tuning BioCLIP for Mediterranean Marine Species Identification. In preparation.
 2. Zafra, G. (2026). FotoFauna: A Citizen Science Platform. In preparation.
 3. Stevens, S. et al. (2024). BioCLIP. CVPR 2024.
 4. Hopkins, G.W. & Freckleton, R.P. (2002). Declines in taxonomists. Animal Conservation.
@@ -376,4 +392,4 @@ BioQuest reimagines marine species learning for the digital age. By combining AI
 
 ---
 
-*Paper in preparation. Version 2026-08-05.*
+*Paper in preparation. Version 2026-08-20.*

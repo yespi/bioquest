@@ -86,7 +86,10 @@ Requieren usuario autenticado (JWT, cookie o PAT admin).
 |-------|-------|
 | Mapa buceo | `/buceo/spots`, `/buceo/spot/{id}`, `/buceo/dive-sites` |
 | Meteo | `/buceo/weather`, `/buceo/forecast`, `/buceo/meteo-grid` |
+| Iconos predicción | `/buceo/forecast-batch?coords=lat,lng\|lat,lng…` (≤100 coords) |
 | Webcams | `/buceo/webcams`, `/buceo/webcam-preview?id=…` |
+
+**`/buceo/forecast-batch`** — weather_code (WMO) diario a 7 días para varias coordenadas en **una sola llamada** Open-Meteo (multi-coord, máx 100, caché 30 min, cooldown 429). Devuelve `{points: [{lat, lng, days: [{date, weather_code}]}], date}`. Alimenta los iconos de predicción del mapa Buceo (el frontend parte en lotes ≤90 y fusiona).
 
 Muchos endpoints de buceo son **públicos** (no exigen auth).
 
